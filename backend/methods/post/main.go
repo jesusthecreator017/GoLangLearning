@@ -1,57 +1,33 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 )
 
 func main() {
-	userToCreate := User{
-		Role:       "Junior Developer",
-		Experience: 2,
-		Remote:     true,
-		User: struct {
-			Name     string `json:"name"`
-			Location string `json:"location"`
-			Age      int    `json:"age"`
-		}{
-			Name:     "Dan",
-			Location: "NOR",
-			Age:      29,
-		},
-	}
-
-	url := "https://api.boot.dev/v1/courses_rest_api/learn-http/users"
+	userId := "2f8282cb-e2f9-496f-b144-c0aa4ced56db"
+	baseURL := "https://api.boot.dev/v1/courses_rest_api/learn-http/users"
 	apiKey := generateKey()
 
-	fmt.Println("Retrieving user data...")
-	userDataFirst, err := getUsers(url, apiKey)
+	userData, err := getUserById(baseURL, userId, apiKey)
 	if err != nil {
-		fmt.Println("Error retrieving users:", err)
-		return
+		fmt.Println(err)
 	}
-	logUsers(userDataFirst)
-	fmt.Println("---")
+	logUser(userData)
 
-	fmt.Println("Creating new user...")
-	creationResponse, err := createUser(url, apiKey, userToCreate)
-	if err != nil {
-		fmt.Println("Error creating user:", err)
-		return
-	}
-	jsonData, _ := json.Marshal(creationResponse)
-	fmt.Printf("Creation response body: %s\n", string(jsonData))
-	fmt.Println("---")
+	fmt.Printf("Updating user with id: %s\n", userData.ID)
+	userData.Role = "Senior Backend Developer"
+	userData.Experience = 7
+	userData.Remote = true
+	userData.User.Name = "Allan"
 
-	fmt.Println("Retrieving user data...")
-	userDataSecond, err := getUsers(url, apiKey)
+	updatedUser, err := updateUser(baseURL, userId, apiKey, userData)
 	if err != nil {
-		fmt.Println("Error retrieving users:", err)
+		fmt.Println(err)
 		return
 	}
-	logUsers(userDataSecond)
-	fmt.Println("---")
+	logUser(updatedUser)
 }
 
 func generateKey() string {
