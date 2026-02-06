@@ -1,8 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, args []string) error {
+	if len(args) > 1 {
+		return errors.New("Too many arguments for help command")
+	}
+
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage: ")

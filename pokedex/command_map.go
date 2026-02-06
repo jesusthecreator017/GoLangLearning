@@ -5,7 +5,11 @@ import (
 	"fmt"
 )
 
-func commandMapf(cfg *config) error {
+func commandMapf(cfg *config, args []string) error {
+	if len(args) > 1 {
+		return errors.New("Too many arguments for mapf command")
+	}
+
 	locationResp, err := cfg.pokeapiClient.GetLocationList(cfg.nextLocationURL)
 	if err != nil {
 		return err
@@ -22,7 +26,11 @@ func commandMapf(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, args []string) error {
+	if len(args) > 1 {
+		return errors.New("Too many arguments for mapb command")
+	}
+
 	if cfg.prevLocationURL == nil {
 		return errors.New("You are on the first page!")
 	}
