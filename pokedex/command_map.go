@@ -1,57 +1,44 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
 )
 
-type pokeApiResponse struct {
-	Count    int       `json:"count"`
-	Next     *string   `json:"next"`
-	Previous *string   `json:"previous"`
-	Results  []mapData `json:"results"`
-}
-
-type mapData struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-
-func commandMap(state *config) error {
-	// Get the map data from the PokeAPI
-	url := "https://pokeapi.co/api/v2/location-area/"
-	data, err := getPokeApiMapData(url)
+func commandMapf(cfg *config) error {
+	locationResp, err := cfg.pokeapiClient.GetLocationList(cfg.nextLocationURL)
 	if err != nil {
-		return fmt.Errorf("Error fetching map data: %w", err)
+		return err
 	}
 
-	// Update the state with the next URL
-	state.Next = data.Next
-	state.Prev = data.Previous
+	// Update the cfg with the new pagination URLs
+	cfg.nextLocationURL = locationResp.Next
+	cfg.prevLocationURL = locationResp.Previous
 
-	// Display the map data
-	for _, value := range data.Results {
-		fmt.Printf("%v\n", value.Name)
+	// Display the locations
+	for _, location := range locationResp.Results {
+		fmt.Println(location.Name)
 	}
-
 	return nil
 }
 
-func getPokeApiMapData(url string) (*pokeApiResponse, error) {
-	// Fetch the map data from the PokeAPI
-	resp, err := http.Get(url)
+func commandMapb(cfg *config) error {
+	if cfg.prevLocationURL == nil {
+		return errors.New("You are on the first page!")
+	}
+
+	locationResp, err := cfg.pokeapiClient.GetLocationList(cfg.prevLocationURL)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting response: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// Decode the JSON response
-	var data pokeApiResponse
-	decoder := json.NewDecoder(resp.Body)
-	if err := decoder.Decode(&data); err != nil {
-		return nil, fmt.Errorf("Error decoding response: %w", err)
+		return err
 	}
 
-	return &data, nil
+	// Update the cfg with the new pagination URLs
+	cfg.nextLocationURL = locationResp.Next
+	cfg.prevLocationURL = locationResp.Previous
+
+	// Display the locations
+	for _, location := range locationResp.Results {
+		fmt.Println(location.Name)
+	}
+	return nil
 }
