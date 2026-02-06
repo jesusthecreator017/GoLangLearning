@@ -10,6 +10,7 @@ func main() {
 	pokeClient := pokeapi.NewClient(10*time.Second, 5*time.Minute)
 	cfg := &config{
 		pokeapiClient: pokeClient,
+		pokedex:       make(map[string]pokeapi.PokeApiPokemonInfoResponse),
 	}
 	startRepl(cfg)
 }

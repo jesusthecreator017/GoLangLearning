@@ -62,3 +62,31 @@ type PokeApiLocationInfoResponse struct {
 		} `json:"version_details"`
 	} `json:"pokemon_encounters"`
 }
+
+type PokeApiPokemonInfoResponse struct {
+	Id             int    `json:"id"`
+	Name           string `json:"name"`
+	BaseExperience int    `json:"base_experience"`
+	Height         int    `json:"height"`
+	Weight         int    `json:"weight"`
+
+	Abilities []struct {
+		Ability struct {
+			Name string `json:"name"`
+		} `json:"ability"`
+		IsHidden bool `json:"is_hidden"`
+	} `json:"abilities"`
+
+	Stats []struct {
+		BaseStat int `json:"base_stat"`
+		Stat     struct {
+			Name string `json:"name"`
+		} `json:"stat"`
+	} `json:"stats"`
+
+	Types []struct {
+		Type struct {
+			Name string `json:"name"`
+		} `json:"type"`
+	} `json:"types"`
+}

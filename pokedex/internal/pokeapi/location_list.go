@@ -94,3 +94,46 @@ func (c *Client) GetLocationInfoList(areaUrl *string) (PokeApiLocationInfoRespon
 	c.cache.Add(url, data)
 	return locationInfoResponse, nil
 }
+
+func (c *Client) GetPokemonInfoList(pokemonUrl *string) (PokeApiPokemonInfoResponse, error) {
+	// Check the URL to fetch
+	url := baseURL + "/pokemon/" + *pokemonUrl
+
+	// Check the cache first
+	if val, ok := c.cache.Get(url); ok {
+		pokemonInfoResponse := PokeApiPokemonInfoResponse{}
+		err := json.Unmarshal(val, &pokemonInfoResponse)
+		if err != nil {
+			return PokeApiPokemonInfoResponse{}, err
+		}
+		return pokemonInfoResponse, nil
+	}
+
+	// Create the HTTP request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return PokeApiPokemonInfoResponse{}, err
+	}
+
+	// Get the HTTP response
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return PokeApiPokemonInfoResponse{}, err
+	}
+	defer resp.Body.Close()
+
+	// Decode the JSON response
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return PokeApiPokemonInfoResponse{}, err
+	}
+
+	pokemonInfoResponse := PokeApiPokemonInfoResponse{}
+	err = json.Unmarshal(data, &pokemonInfoResponse)
+	if err != nil {
+		return PokeApiPokemonInfoResponse{}, err
+	}
+
+	c.cache.Add(url, data)
+	return pokemonInfoResponse, nil
+}
