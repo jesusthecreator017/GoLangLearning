@@ -7,7 +7,7 @@ import (
 
 func commandPokedex(cfg *config, args []string) error {
 	if len(cfg.pokedex) == 0 {
-		return errors.New("Your pokedex is empty. Try catching some pokemon first!")
+		return errors.New("Your pokedex is empty! Try catching some pokemon first!")
 	}
 
 	fmt.Println("Your Pokedex:")
